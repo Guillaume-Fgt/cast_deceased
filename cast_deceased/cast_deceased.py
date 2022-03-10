@@ -38,7 +38,7 @@ except:
 else:
     # if try ok
     movie_details = ia.get_movie(movie_id, info="main")
-    cast_list = movie_details["cast"]
+    cast_list = movie_details["cast"][:20]
 
     header = st.container()
     with header:
@@ -50,11 +50,10 @@ else:
                 h2.markdown(f"Director: {director}, {actor_details(director)}")
         except:
             h2.markdown("No director found")
-        h2.metric(label="Total actor", value=len(cast_list))
+        h2.metric(label="Total actor (limited to 20)", value=len(cast_list))
 
     # MultiThreading. Using map instead submit to keep actor order.
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        results = executor.map(actor_details, cast_list)
         avatars = executor.map(actor_avatar, cast_list)
 
         list_avatar = []
@@ -62,6 +61,9 @@ else:
             list_avatar.append(avatar)
         st.image(list_avatar, width=67, caption=cast_list)
 
+    # MultiThreading
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = executor.map(actor_details, cast_list)
     cast = st.container()
     with cast:
         col1, col2 = st.columns(2)
@@ -70,7 +72,7 @@ else:
         col2.subheader("Death date")
 
         # actor names
-        [col1.markdown(actor) for actor in movie_details["cast"]]
+        [col1.markdown(actor) for actor in cast_list]
 
         for result in results:
             col2.markdown(result)
