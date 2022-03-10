@@ -7,12 +7,14 @@ st.header("Are they dead?")
 
 ia = Cinemagoer()
 
+st.sidebar.header("Search your movie")
 movie_search = st.sidebar.text_input("Search movie")
 movie_list = ia.search_movie(movie_search, results=5)
-movie_list.insert(0, "")  # we want empty value in selectbox to not trigger search
-movie_selected = st.sidebar.radio("select movie", movie_list)
-if movie_selected:
-    movie = ia.search_movie(str(movie_selected))
+if movie_list:
+    movie_list.insert(0, "")  # we want empty value in selectbox to not trigger search
+    movie_selected = st.sidebar.radio("select movie", movie_list)
+    if movie_selected:
+        movie = ia.search_movie(str(movie_selected))
 alive = 0
 
 
