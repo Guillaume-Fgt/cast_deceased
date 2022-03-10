@@ -5,21 +5,49 @@ import concurrent.futures
 LIMIT_ACTORS = 20
 st.header("Are they dead?")
 
-ia = Cinemagoer()
 
-st.sidebar.header("Search your movie")
+@st.cache
+def search_movie(movie, nbr_result: int):
+    ia = connect()
+    list = ia.search_movie(movie, results=nbr_result)
+    return list
+
+
+@st.cache
+def get_movie(movie):
+    ia = connect()
+    list = ia.get_movie(movie, info="main")
+    return list
+
+
+def connect():
+    # create an instance of imdb object
+    return Cinemagoer()
+
+
+st.sidebar.header("Tools")
 movie_search = st.sidebar.text_input("Search movie")
-movie_list = ia.search_movie(movie_search, results=5)
-if movie_list:
-    movie_list.insert(0, "")  # we want empty value in selectbox to not trigger search
-    movie_selected = st.sidebar.radio("select movie", movie_list)
-    if movie_selected:
-        movie = ia.search_movie(str(movie_selected))
+movie_list = search_movie(movie_search, 5)
+
+movie_ID = []
+movie_title = []
+for movie in movie_list:
+    dict_movie = {"id": movie.movieID, "title": str(movie)}
+    movie_ID.append(movie.movieID)
+    movie_title.append(str(movie))
+
+movie_selected = st.sidebar.radio("Select movie", movie_title)
+for index, movie in enumerate(movie_title):
+    if movie == movie_selected:
+        movie_id = str(movie_ID[index])
+
+
 alive = 0
 
 
 def actor_details(actor):
     # return death date and avatar for a given actor ID
+    ia = connect()
     actor_info = ia.get_person(actor.personID, info="biography")
     # check if death date exists
     try:
@@ -35,14 +63,13 @@ def actor_details(actor):
 
 
 try:
-    # movie found
-    movie_id = movie[0].movieID
+    movie_details = get_movie(movie_id)
 except:
     # movie not found
     st.info("Enter a valid movie title")
 else:
     # if try ok
-    movie_details = ia.get_movie(movie_id, info="main")
+
     cast_list = movie_details["cast"][:LIMIT_ACTORS]
 
     header = st.container()
