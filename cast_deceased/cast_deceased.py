@@ -2,7 +2,7 @@ from imdb import Cinemagoer
 import streamlit as st
 import concurrent.futures
 
-
+LIMIT_ACTORS = 20
 st.header("Are they dead?")
 
 ia = Cinemagoer()
@@ -26,7 +26,7 @@ def actor_details(actor):
         avatar = actor_info["headshot"]
     except:
         avatar = "ressources/avatar.jpg"
-    return [f":skull_and_crossbones: {death_date}", avatar]
+    return {"death_date": death_date, "avatar": avatar}
 
 
 try:
@@ -38,7 +38,7 @@ except:
 else:
     # if try ok
     movie_details = ia.get_movie(movie_id, info="main")
-    cast_list = movie_details["cast"][:20]
+    cast_list = movie_details["cast"][:LIMIT_ACTORS]
 
     header = st.container()
     with header:
@@ -47,22 +47,26 @@ else:
         h2.markdown(f'Year: {movie_details["year"]}')
         try:
             for director in movie_details["director"]:
-                h2.markdown(f"Director: {director}, {actor_details(director)[0]}")
+                h2.markdown(
+                    f"Director: {director}, {actor_details(director)['death_date']}"
+                )
         except:
             h2.markdown("No director found")
-        h2.metric(label="Total actor (limited to 20)", value=len(cast_list))
+        h2.metric(
+            label=f"Total actor (limited to {LIMIT_ACTORS})", value=len(cast_list)
+        )
 
     # MultiThreading. Using map instead submit to keep actor order.
     with concurrent.futures.ThreadPoolExecutor() as executor:
         results = executor.map(actor_details, cast_list)
 
-        list_avatar = []
-        list_death = []
-        for result in results:
-            list_avatar.append(result[1])
-            list_death.append(result[0])
+    list_avatar = []
+    list_death = []
+    for result in results:
+        list_avatar.append(result["avatar"])
+        list_death.append(result["death_date"])
 
-        st.image(list_avatar, width=67, caption=cast_list)
+    st.image(list_avatar, width=67, caption=cast_list)
 
     cast = st.container()
     with cast:
@@ -75,9 +79,11 @@ else:
         [col1.markdown(actor) for actor in cast_list]
 
         for date in list_death:
-            col2.markdown(date)
             if date == "Alive":
                 alive += 1
+                col2.markdown(date)
+            else:
+                col2.markdown(f":skull_and_crossbones: {date}")
 
     with header:
         h2.metric(label="Alive", value=alive)
