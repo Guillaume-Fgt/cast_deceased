@@ -1,7 +1,7 @@
 import sys
 from streamlit import cli as stcli
 import streamlit as st
-from cast_deceased.webapp import main
+from cast_deceased import main
 
 
 if __name__ == "__main__":
