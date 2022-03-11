@@ -9,15 +9,16 @@ def main():
 
     st.sidebar.header("Tools")
     movie_search = st.sidebar.text_input("Search movie")
-    movie_list = search_movie(movie_search, 5)
+    movie_list = search_movie(movie_search, 10)
     movie_ID = []
     movie_title = []
     for movie in movie_list:
-        dict_movie = {"id": movie.movieID, "title": str(movie)}
         movie_ID.append(movie.movieID)
-        movie_title.append(str(movie))
-
-    movie_selected = st.sidebar.radio("Select movie", movie_title)
+        try:
+            movie_title.append(str(movie) + " " + str(movie["year"]))
+        except:
+            movie_title.append(str(movie))
+    movie_selected = st.sidebar.radio("Select movie", [""] + movie_title)
     for index, movie in enumerate(movie_title):
         if movie == movie_selected:
             movie_id = str(movie_ID[index])
@@ -37,7 +38,10 @@ def main():
         header = st.container()
         with header:
             h1, h2 = st.columns(2)
-            h1.image(movie_details["full-size cover url"], use_column_width=True)
+            try:
+                h1.image(movie_details["full-size cover url"], use_column_width=True)
+            except KeyError:
+                h1.text("No poster")
             h2.markdown(f'Year: {movie_details["year"]}')
             try:
                 for director in movie_details["director"]:
