@@ -4,6 +4,7 @@ from cast_deceased.utils import (
     search_movie,
     get_movie,
     actor_details,
+    set_title,
 )
 import pytest
 
@@ -32,3 +33,8 @@ def test_actor_details(create_connection) -> None:
     cast = movie_detail["cast"][0]
     actor = actor_details(create_connection, cast)
     assert len(actor) == 2
+
+
+def test_set_title(create_connection) -> None:
+    movie = get_movie(create_connection, "0099685")
+    assert set_title(movie) == "Goodfellas 1990"
