@@ -49,7 +49,8 @@ def main() -> None:
             try:
                 for director in movie_details["director"]:
                     h2.markdown(
-                        f"Director: {director}, {actor_details(ia_connection,director)['death_date']}"
+                        f"Director: {director},\n"
+                        f"{actor_details(ia_connection,director)['death_date']}"
                     )
             except KeyError:
                 h2.markdown("No director found")
