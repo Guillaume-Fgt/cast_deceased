@@ -1,4 +1,4 @@
-from imdb import Cinemagoer, IMDbBase, Movie
+from imdb import Cinemagoer, IMDbBase, Movie, Person
 
 """
 Functions used in the backend to search movie and actors infos
@@ -24,7 +24,7 @@ def get_movie(connection: IMDbBase, movie) -> Movie.Movie:
     return list
 
 
-def actor_details(connection: IMDbBase, actor) -> dict[str, str]:
+def actor_details(connection: IMDbBase, actor: Person.Person) -> dict[str, str]:
     # return death date and avatar for a given actor ID
     actor_info = connection.get_person(actor.personID, info="biography")
     # check if death date exists
