@@ -1,15 +1,20 @@
 import streamlit as st
 import concurrent.futures
-from cast_deceased.utils import search_movie, get_movie, actor_details
+from cast_deceased.utils import connect, search_movie, get_movie, actor_details
+import itertools
 
 
-def main():
+def main() -> None:
     LIMIT_ACTORS = 20
     st.header("Are they dead?")
-
     st.sidebar.header("Tools")
     movie_search = st.sidebar.text_input("Search movie")
-    movie_list = search_movie(movie_search, 10)
+
+    ia_connection = connect()
+    movie_list = search_movie(ia_connection, movie_search, 10)
+    # movie_dict = {movie["title"]: movie.movieID for movie in movie_list}
+    # print(movie_dict)
+
     movie_ID = []
     movie_title = []
     for movie in movie_list:
@@ -26,7 +31,7 @@ def main():
     alive = 0
 
     try:
-        movie_details = get_movie(movie_id)
+        movie_details = get_movie(ia_connection, movie_id)
     except:
         # movie not found
         st.info("Enter a valid movie title")
@@ -46,7 +51,7 @@ def main():
             try:
                 for director in movie_details["director"]:
                     h2.markdown(
-                        f"Director: {director}, {actor_details(director)['death_date']}"
+                        f"Director: {director}, {actor_details(ia_connection,director)['death_date']}"
                     )
             except:
                 h2.markdown("No director found")
@@ -56,7 +61,9 @@ def main():
 
         # MultiThreading. Using map instead submit to keep actor order.
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = executor.map(actor_details, cast_list)
+            results = executor.map(
+                actor_details, itertools.repeat(ia_connection), cast_list
+            )
 
         list_avatar = []
         list_death = []
@@ -86,3 +93,7 @@ def main():
         with header:
             h2.metric(label="Alive", value=alive)
             h2.metric(label="Deceased", value=len(cast_list) - alive)
+
+
+if __name__ == "__name__":
+    main()

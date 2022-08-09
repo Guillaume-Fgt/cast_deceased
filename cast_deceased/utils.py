@@ -1,44 +1,40 @@
-from imdb import Cinemagoer
-import streamlit as st
+from imdb import Cinemagoer, IMDbBase, Movie
 
 """
 Functions used in the backend to search movie and actors infos
 """
 
 
-def connect():
+def connect() -> IMDbBase:
     # create an instance of an imdb object
     return Cinemagoer()
 
 
-@st.cache
-def search_movie(movie, nbr_result: int):
+def search_movie(
+    connection: IMDbBase, movie: str, nbr_result: int
+) -> list[Movie.Movie]:
     # search list of movies corresponding to a title
-    ia = connect()
-    list = ia.search_movie(movie, results=nbr_result)
+    list = connection.search_movie(movie, results=nbr_result)
     return list
 
 
-@st.cache
-def get_movie(movie):
+def get_movie(connection: IMDbBase, movie) -> Movie.Movie:
     # search movie details corresponding to a movie ID
-    ia = connect()
-    list = ia.get_movie(movie, info="main")
+    list = connection.get_movie(movie, info="main")
     return list
 
 
-def actor_details(actor):
+def actor_details(connection: IMDbBase, actor) -> dict[str, str]:
     # return death date and avatar for a given actor ID
-    ia = connect()
-    actor_info = ia.get_person(actor.personID, info="biography")
+    actor_info = connection.get_person(actor.personID, info="biography")
     # check if death date exists
     try:
         death_date = actor_info["death date"]
-    except:
+    except KeyError:
         death_date = "Alive"
     # check if avatar exists
     try:
         avatar = actor_info["headshot"]
-    except:
+    except KeyError:
         avatar = "ressources/avatar.jpg"
     return {"death_date": death_date, "avatar": avatar}
