@@ -38,3 +38,12 @@ def actor_details(connection: IMDbBase, actor) -> dict[str, str]:
     except KeyError:
         avatar = "ressources/avatar.jpg"
     return {"death_date": death_date, "avatar": avatar}
+
+
+def set_title(movie: Movie.Movie) -> str:
+    """generate a movie title handling possible missing year key"""
+    try:
+        movie_title = str(movie) + " " + str(movie["year"])
+    except KeyError:
+        movie_title = str(movie)
+    return movie_title

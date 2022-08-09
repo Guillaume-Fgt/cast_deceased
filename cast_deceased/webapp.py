@@ -1,6 +1,12 @@
 import streamlit as st
 import concurrent.futures
-from cast_deceased.utils import connect, search_movie, get_movie, actor_details
+from cast_deceased.utils import (
+    connect,
+    search_movie,
+    get_movie,
+    actor_details,
+    set_title,
+)
 import itertools
 
 
@@ -12,32 +18,19 @@ def main() -> None:
 
     ia_connection = connect()
     movie_list = search_movie(ia_connection, movie_search, 10)
-    # movie_dict = {movie["title"]: movie.movieID for movie in movie_list}
-    # print(movie_dict)
+    movie_dict = {set_title(movie): movie.movieID for movie in movie_list}
 
-    movie_ID = []
-    movie_title = []
-    for movie in movie_list:
-        movie_ID.append(movie.movieID)
-        try:
-            movie_title.append(str(movie) + " " + str(movie["year"]))
-        except:
-            movie_title.append(str(movie))
-    movie_selected = st.sidebar.radio("Select movie", [""] + movie_title)
-    for index, movie in enumerate(movie_title):
-        if movie == movie_selected:
-            movie_id = str(movie_ID[index])
-
-    alive = 0
+    movie_selected = st.sidebar.radio(
+        label="Select movie", options=[""] + list(movie_dict.keys())
+    )
 
     try:
-        movie_details = get_movie(ia_connection, movie_id)
-    except:
-        # movie not found
+        movie_id = movie_dict[movie_selected]
+    except KeyError:
         st.info("Enter a valid movie title")
     else:
-        # if try ok
-
+        movie_details = get_movie(ia_connection, movie_id)
+        alive = 0
         cast_list = movie_details["cast"][:LIMIT_ACTORS]
 
         header = st.container()
