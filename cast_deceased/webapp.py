@@ -46,7 +46,7 @@ def main() -> None:
                     h2.markdown(
                         f"Director: {director}, {actor_details(ia_connection,director)['death_date']}"
                     )
-            except:
+            except KeyError:
                 h2.markdown("No director found")
             h2.metric(
                 label=f"Total actor (limited to {LIMIT_ACTORS})", value=len(cast_list)
