@@ -31,7 +31,12 @@ def main() -> None:
     else:
         movie_details = get_movie(ia_connection, movie_id)
         alive = 0
-        cast_list = movie_details["cast"][:LIMIT_ACTORS]
+
+        try:
+            cast_list = movie_details["cast"][:LIMIT_ACTORS]
+        except KeyError:
+            cast_list = []
+            st.info("No cast avalaible for this movie")
 
         header = st.container()
         with header:
