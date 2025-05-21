@@ -15,13 +15,8 @@ clone the repo:
 ```
 git clone https://github.com/Guillaume-Fgt/cast_deceased.git
 ```
-Navigate to the clone directory and use [poetry](https://python-poetry.org/docs/) to install dependencies:
+Navigate to the clone directory and use [uv] to run the main file:
 ```
-poetry install
+uv run main.py
 ```
 
-
-Use run.py file:
-```
-python run.py
-```

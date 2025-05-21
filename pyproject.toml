@@ -1,19 +1,10 @@
-[tool.poetry]
-name = "cast_deceased"
+[project]
+name = "cast-deceased"
 version = "0.1.0"
-description = ""
-authors = ["Guillaume Faguet <guillaume.faguet@protonmail.com>"]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-cinemagoer = "^2022.2.11"
-black = "^22.1.0"
-streamlit = "^1.7.0"
-
-[tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
-flake8 = "^4.0.1"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+description = "Find out if an actor from a movie is still alive "
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "cinemagoer>=2023.5.1",
+    "streamlit>=1.45.1",
+]

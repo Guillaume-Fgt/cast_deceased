@@ -14,28 +14,22 @@ def search_movie(
     connection: IMDbBase, movie: str, nbr_result: int
 ) -> list[Movie.Movie]:
     # search list of movies corresponding to a title
-    list = connection.search_movie(movie, results=nbr_result)
-    return list
+    return connection.search_movie(movie, results=nbr_result)
 
 
-def get_movie(connection: IMDbBase, movie) -> Movie.Movie:
+def get_movie(connection: IMDbBase, movie_id: str) -> Movie.Movie:
     # search movie details corresponding to a movie ID
-    list = connection.get_movie(movie, info="main")
-    return list
+    return connection.get_movie(movie_id, info="main")
 
 
 def actor_details(connection: IMDbBase, actor: Person.Person) -> dict[str, str]:
-    # return death date and avatar for a given actor ID
+    """return death date and avatar for a given actor ID"""
     actor_info = connection.get_person(actor.personID, info="biography")
-    # check if death date exists
-    try:
-        death_date = actor_info["death date"]
-    except KeyError:
+    death_date = actor_info.get("death date")
+    if not death_date:
         death_date = "Alive"
-    # check if avatar exists
-    try:
-        avatar = actor_info["headshot"]
-    except KeyError:
+    avatar = actor_info.get("headshot")
+    if not avatar:
         avatar = "ressources/avatar.jpg"
     return {"death_date": death_date, "avatar": avatar}
 
